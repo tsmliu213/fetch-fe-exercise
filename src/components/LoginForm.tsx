@@ -6,9 +6,11 @@ import { Label } from "@/components/ui/label";
 
 interface LoginFormProps {
   onSubmit: (name: string, email: string) => void;
+  isLoading?: boolean;
+  error?: string | null;
 }
 
-export function LoginForm({ onSubmit }: LoginFormProps) {
+export function LoginForm({ onSubmit, isLoading = false, error = null }: LoginFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
@@ -36,6 +38,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              disabled={isLoading}
               className="w-[230px]"
             />
           </div>
@@ -48,11 +51,15 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isLoading}
               className="w-[230px]"
             />
           </div>
-          <Button type="submit" className="w-full">
-            Login
+          {error && (
+            <div className="text-sm text-red-500 mt-2">{error}</div>
+          )}
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Login"}
           </Button>
         </form>
       </CardContent>
