@@ -1,11 +1,13 @@
 import './App.css'
-
 import { LoginForm } from "@/components/LoginForm";
 import { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import Search from '@/views/Search';
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleLogin = async (name: string, email: string) => {
     setIsLoading(true);
@@ -26,8 +28,7 @@ function App() {
       }
 
       // Login successful
-      console.log('Login successful!');
-      // TODO: Implement redirect to search page in the next step
+      setIsAuthenticated(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
     } finally {
@@ -36,9 +37,26 @@ function App() {
   };
 
   return (
-    <div className="flex items-center justify-center">
-      <LoginForm onSubmit={handleLogin} isLoading={isLoading} error={error} />
-    </div>
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/search" replace />
+            ) : (
+              <div className="flex items-center justify-center">
+                <LoginForm onSubmit={handleLogin} isLoading={isLoading} error={error} />
+              </div>
+            )
+          }
+        />
+        <Route
+          path="/search"
+          element={isAuthenticated ? <Search /> : <Navigate to="/" replace />}
+        />
+      </Routes>
+    </Router>
   );
 }
 
