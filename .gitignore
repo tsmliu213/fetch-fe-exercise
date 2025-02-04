@@ -1,0 +1,24 @@
+# Node modules
+node_modules/
+
+# Build output
+build/
+dist/
+
+# Logs and caches
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.cache/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS-specific files
+.DS_Store
+
+# TypeScript-specific files
+*.tsbuildinfo
