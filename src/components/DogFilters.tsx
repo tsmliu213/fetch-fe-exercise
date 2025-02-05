@@ -47,7 +47,7 @@ export function DogFilters({ selectedBreeds, onBreedsChange, sortOrder, onSortOr
   return (
     <div className="w-64 bg-white p-4 border-r min-h-screen">
       <div className="mb-6">
-        <label htmlFor="sort-order" className="block text-lg font-semibold text-gray-700 mb-2">
+        <label htmlFor="sort-order" className="block text-lg font-semibold mb-2">
           Sort by Breed
         </label>
         <select
@@ -63,7 +63,7 @@ export function DogFilters({ selectedBreeds, onBreedsChange, sortOrder, onSortOr
       <h2 className="text-lg font-semibold mb-4">Filter by Breed</h2>
       <div className="space-y-2 max-h-[calc(100vh-8rem)] overflow-y-auto">
         {breeds.map((breed) => (
-          <div key={breed} className="flex items-center space-x-2">
+          <div key={breed} className="flex items-center text-left space-x-2">
             <input
               type="checkbox"
               id={breed}
