@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { DogFilters } from '@/components/DogFilters';
 
 interface Dog {
   id: string;
@@ -55,24 +56,27 @@ export default function Search() {
   if (error) return <div className="text-red-500 text-center">{error}</div>;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Available Dogs</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {dogs.map((dog) => (
-          <Card key={dog.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-            <img 
-              src={dog.img} 
-              alt={`${dog.name} - ${dog.breed}`}
-              className="w-full h-48 object-cover"
-            />
-            <CardContent className="p-4">
-              <h2 className="text-xl font-semibold mb-2">{dog.name}</h2>
-              <p className="text-gray-600">Breed: {dog.breed}</p>
-              <p className="text-gray-600">Age: {dog.age} years</p>
-              <p className="text-gray-600">Location: {dog.zip_code}</p>
-            </CardContent>
-          </Card>
-        ))}
+    <div className="flex min-h-screen">
+      <DogFilters onBreedsChange={(breeds) => console.log('Selected breeds:', breeds)} />
+      <div className="flex-1 p-8">
+        <h1 className="text-3xl font-bold mb-6">Available Dogs</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {dogs.map((dog) => (
+            <Card key={dog.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <img 
+                src={dog.img} 
+                alt={`${dog.name} - ${dog.breed}`}
+                className="w-full h-48 object-cover"
+              />
+              <CardContent className="p-4">
+                <h2 className="text-xl font-semibold mb-2">{dog.name}</h2>
+                <p className="text-gray-600">Breed: {dog.breed}</p>
+                <p className="text-gray-600">Age: {dog.age} years</p>
+                <p className="text-gray-600">Location: {dog.zip_code}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );
