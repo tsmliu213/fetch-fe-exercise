@@ -1,3 +1,7 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/59f97de8-6989-4d9c-9839-a604853f6bba/deploy-status)](https://app.netlify.com/sites/jade-pasca-3a188b/deploys)
+
+Demo link: [Fetch FE Excercise](https://fetch.thomasliu.com)
+
 # Developer Exercise
 
 ## Notes
