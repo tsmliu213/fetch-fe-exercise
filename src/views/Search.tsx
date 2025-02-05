@@ -3,21 +3,17 @@ import { Card, CardContent } from '@/components/ui/card';
 import { DogFilters } from '@/components/DogFilters';
 import { Button } from '@/components/ui/button';
 
-interface Dog {
-  id: string;
-  img: string;
-  name: string;
-  age: number;
-  zip_code: string;
-  breed: string;
-}
+import { Dog } from '@/types';
 
 interface SearchProps {
   selectedBreeds: string[];
   onBreedsChange: (breeds: string[]) => void;
+  favoriteDogs: Dog[];
+  onToggleFavorite: (dog: Dog) => void;
+  onGenerateMatch: () => void;
 }
 
-export default function Search({ selectedBreeds, onBreedsChange }: SearchProps) {
+export default function Search({ selectedBreeds, onBreedsChange, favoriteDogs, onToggleFavorite, onGenerateMatch }: SearchProps) {
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,8 +64,12 @@ export default function Search({ selectedBreeds, onBreedsChange }: SearchProps) 
         
         if (!dogsResponse.ok) throw new Error('Failed to fetch dogs');
         
-        const dogsData = await dogsResponse.json();
-        setDogs(dogsData);
+        const dogsData: Dog[] = await dogsResponse.json();
+        // Filter out dogs that are already in favorites with proper type checking
+        const filteredDogsData = dogsData.filter((dog: Dog) => 
+          !favoriteDogs.some((favDog: Dog) => favDog.id === dog.id)
+        );
+        setDogs(filteredDogsData);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch dogs');
       } finally {
@@ -78,7 +78,7 @@ export default function Search({ selectedBreeds, onBreedsChange }: SearchProps) 
     };
 
     fetchDogs(currentPage);
-  }, [currentPage, selectedBreeds, sortOrder]);
+  }, [currentPage, selectedBreeds, sortOrder, favoriteDogs]);
 
   if (loading) return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
   if (error) return <div className="text-red-500 text-center">{error}</div>;
@@ -92,10 +92,63 @@ export default function Search({ selectedBreeds, onBreedsChange }: SearchProps) 
         onSortOrderChange={setSortOrder}
       />
       <div className="flex-1 p-8">
+        {favoriteDogs.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-4">Favorite Dogs</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
+              {favoriteDogs.map((dog) => (
+                <Card key={dog.id} className="overflow-hidden hover:shadow-lg transition-shadow relative">
+                  <button
+                    onClick={() => onToggleFavorite(dog)}
+                    className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-red-500 fill-current"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                    </svg>
+                  </button>
+                  <img 
+                    src={dog.img} 
+                    alt={`${dog.name} - ${dog.breed}`}
+                    className="w-full h-48 object-cover"
+                  />
+                  <CardContent className="p-4">
+                    <h2 className="text-xl font-semibold mb-2">{dog.name}</h2>
+                    <p className="text-gray-600">Breed: {dog.breed}</p>
+                    <p className="text-gray-600">Age: {dog.age} years</p>
+                    <p className="text-gray-600">Location: {dog.zip_code}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <Button
+              onClick={onGenerateMatch}
+              className="w-full max-w-md mx-auto block"
+            >
+              Generate Match
+            </Button>
+          </div>
+        )}
+
         <h1 className="text-3xl font-bold mb-6">Available Dogs</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {dogs.map((dog) => (
-            <Card key={dog.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+            <Card key={dog.id} className="overflow-hidden hover:shadow-lg transition-shadow relative">
+              <button
+                onClick={() => onToggleFavorite(dog)}
+                className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-6 w-6 ${favoriteDogs.some(d => d.id === dog.id) ? 'text-red-500 fill-current' : 'text-gray-400'}`}
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+              </button>
               <img 
                 src={dog.img} 
                 alt={`${dog.name} - ${dog.breed}`}

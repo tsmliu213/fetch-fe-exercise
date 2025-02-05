@@ -4,11 +4,14 @@ import { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Search from '@/views/Search';
 
+import { Dog } from '@/types';
+
 function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedBreeds, setSelectedBreeds] = useState<string[]>([]);
+  const [favoriteDogs, setFavoriteDogs] = useState<Dog[]>([]);
 
   const handleLogin = async (name: string, email: string) => {
     setIsLoading(true);
@@ -41,6 +44,42 @@ function App() {
     setSelectedBreeds(breeds);
   };
 
+  const handleToggleFavorite = (dog: Dog) => {
+    setFavoriteDogs(prev => {
+      const exists = prev.some(d => d.id === dog.id);
+      if (exists) {
+        return prev.filter(d => d.id !== dog.id);
+      } else {
+        return [...prev, dog];
+      }
+    });
+  };
+
+  const handleGenerateMatch = async () => {
+    if (favoriteDogs.length === 0) return;
+
+    try {
+      const response = await fetch('https://frontend-take-home-service.fetch.com/dogs/match', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(favoriteDogs.map(dog => dog.id))
+      });
+
+      if (!response.ok) throw new Error('Failed to generate match');
+
+      const data = await response.json();
+      const matchedDog = favoriteDogs.find(dog => dog.id === data.match);
+      if (matchedDog) {
+        alert(`Congratulations! You've been matched with ${matchedDog.name}!`);
+      }
+    } catch (err) {
+      console.error('Error generating match:', err);
+    }
+  };
+
   return (
     <Router>
       <Routes>
@@ -61,7 +100,10 @@ function App() {
           element={isAuthenticated ? 
             <Search 
               selectedBreeds={selectedBreeds} 
-              onBreedsChange={handleBreedsChange} 
+              onBreedsChange={handleBreedsChange}
+              favoriteDogs={favoriteDogs}
+              onToggleFavorite={handleToggleFavorite}
+              onGenerateMatch={handleGenerateMatch}
             /> : 
             <Navigate to="/" replace />
           }
