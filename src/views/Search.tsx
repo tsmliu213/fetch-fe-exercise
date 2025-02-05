@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { DogFilters } from '@/components/DogFilters';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 import { Dog } from '@/types';
 
@@ -11,9 +12,26 @@ interface SearchProps {
   favoriteDogs: Dog[];
   onToggleFavorite: (dog: Dog) => void;
   onGenerateMatch: () => void;
+  matchedDog: Dog | null;
 }
 
-export default function Search({ selectedBreeds, onBreedsChange, favoriteDogs, onToggleFavorite, onGenerateMatch }: SearchProps) {
+export default function Search({ 
+  selectedBreeds, 
+  onBreedsChange, 
+  favoriteDogs, 
+  onToggleFavorite, 
+  onGenerateMatch,
+  matchedDog 
+}: SearchProps) {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (matchedDog) {
+      navigate('/match');
+    }
+  }, [matchedDog, navigate]);
+
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

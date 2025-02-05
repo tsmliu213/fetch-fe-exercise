@@ -3,6 +3,7 @@ import { LoginForm } from "@/components/LoginForm";
 import { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Search from '@/views/Search';
+import Match from '@/views/Match';
 
 import { Dog } from '@/types';
 
@@ -12,6 +13,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedBreeds, setSelectedBreeds] = useState<string[]>([]);
   const [favoriteDogs, setFavoriteDogs] = useState<Dog[]>([]);
+  const [matchedDog, setMatchedDog] = useState<Dog | null>(null);
 
   const handleLogin = async (name: string, email: string) => {
     setIsLoading(true);
@@ -57,7 +59,7 @@ function App() {
 
   const handleGenerateMatch = async () => {
     if (favoriteDogs.length === 0) return;
-
+  
     try {
       const response = await fetch('https://frontend-take-home-service.fetch.com/dogs/match', {
         method: 'POST',
@@ -67,13 +69,13 @@ function App() {
         credentials: 'include',
         body: JSON.stringify(favoriteDogs.map(dog => dog.id))
       });
-
+  
       if (!response.ok) throw new Error('Failed to generate match');
-
+  
       const data = await response.json();
-      const matchedDog = favoriteDogs.find(dog => dog.id === data.match);
-      if (matchedDog) {
-        alert(`Congratulations! You've been matched with ${matchedDog.name}!`);
+      const foundMatchedDog = favoriteDogs.find(dog => dog.id === data.match);
+      if (foundMatchedDog) {
+        setMatchedDog(foundMatchedDog);
       }
     } catch (err) {
       console.error('Error generating match:', err);
@@ -104,9 +106,14 @@ function App() {
               favoriteDogs={favoriteDogs}
               onToggleFavorite={handleToggleFavorite}
               onGenerateMatch={handleGenerateMatch}
+              matchedDog={matchedDog}
             /> : 
             <Navigate to="/" replace />
           }
+        />
+        <Route
+          path="/match"
+          element={isAuthenticated ? <Match matchedDog={matchedDog} /> : <Navigate to="/" replace />}
         />
       </Routes>
     </Router>
