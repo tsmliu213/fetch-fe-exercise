@@ -15,6 +15,10 @@ function App() {
   const [favoriteDogs, setFavoriteDogs] = useState<Dog[]>([]);
   const [matchedDog, setMatchedDog] = useState<Dog | null>(null);
 
+  const clearMatchedDog = () => {
+    setMatchedDog(null);
+  };
+
   const handleLogin = async (name: string, email: string) => {
     setIsLoading(true);
     setError(null);
@@ -113,7 +117,7 @@ function App() {
         />
         <Route
           path="/match"
-          element={isAuthenticated ? <Match matchedDog={matchedDog} /> : <Navigate to="/" replace />}
+          element={isAuthenticated ? <Match matchedDog={matchedDog} onClearMatch={clearMatchedDog} /> : <Navigate to="/" replace />}
         />
       </Routes>
     </Router>

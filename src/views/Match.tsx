@@ -1,14 +1,18 @@
-import { Navigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dog } from '@/types';
+import { useNavigate } from 'react-router-dom';
 
 interface MatchProps {
   matchedDog: Dog | null;
+  onClearMatch: () => void;
 }
 
-export default function Match({ matchedDog }: MatchProps) {
+export default function Match({ matchedDog, onClearMatch }: MatchProps) {
+  const navigate = useNavigate();
+
   if (!matchedDog) {
-    return <Navigate to="/search" replace />;
+    navigate('/search', { replace: true });
+    return null;
   }
 
   return (
@@ -49,6 +53,31 @@ export default function Match({ matchedDog }: MatchProps) {
           </div>
         </CardContent>
       </Card>
+
+      <div className="mt-8">
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            onClearMatch();
+            navigate('/search', { replace: true });
+          }}
+          className="mb-4 inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 mr-2"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L4.414 9H17a1 1 0 110 2H4.414l5.293 5.293a1 1 0 010 1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+          Find another match
+        </button>
+      </div>
     </div>
   );
 }
