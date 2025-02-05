@@ -24,6 +24,7 @@ export default function Search({ selectedBreeds, onBreedsChange }: SearchProps) 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalResults, setTotalResults] = useState(0);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const ITEMS_PER_PAGE = 25;
 
   useEffect(() => {
@@ -33,7 +34,7 @@ export default function Search({ selectedBreeds, onBreedsChange }: SearchProps) 
       try {
         const from = (page - 1) * ITEMS_PER_PAGE;
         const searchParams = new URLSearchParams({
-          sort: 'breed:asc',
+          sort: `breed:${sortOrder}`,
           size: '1000',
           from: from.toString()
         });
@@ -77,7 +78,7 @@ export default function Search({ selectedBreeds, onBreedsChange }: SearchProps) 
     };
 
     fetchDogs(currentPage);
-  }, [currentPage, selectedBreeds]);
+  }, [currentPage, selectedBreeds, sortOrder]);
 
   if (loading) return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
   if (error) return <div className="text-red-500 text-center">{error}</div>;
@@ -87,6 +88,8 @@ export default function Search({ selectedBreeds, onBreedsChange }: SearchProps) 
       <DogFilters 
         selectedBreeds={selectedBreeds}
         onBreedsChange={onBreedsChange}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
       />
       <div className="flex-1 p-8">
         <h1 className="text-3xl font-bold mb-6">Available Dogs</h1>

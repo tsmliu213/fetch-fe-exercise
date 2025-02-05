@@ -3,9 +3,11 @@ import { useEffect, useState } from 'react';
 interface DogFiltersProps {
   selectedBreeds: string[];
   onBreedsChange: (selectedBreeds: string[]) => void;
+  sortOrder: 'asc' | 'desc';
+  onSortOrderChange: (order: 'asc' | 'desc') => void;
 }
 
-export function DogFilters({ selectedBreeds, onBreedsChange }: DogFiltersProps) {
+export function DogFilters({ selectedBreeds, onBreedsChange, sortOrder, onSortOrderChange }: DogFiltersProps) {
   const [breeds, setBreeds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +46,20 @@ export function DogFilters({ selectedBreeds, onBreedsChange }: DogFiltersProps) 
 
   return (
     <div className="w-64 bg-white p-4 border-r min-h-screen">
+      <div className="mb-6">
+        <label htmlFor="sort-order" className="block text-lg font-semibold text-gray-700 mb-2">
+          Sort by Breed
+        </label>
+        <select
+          id="sort-order"
+          value={sortOrder}
+          onChange={(e) => onSortOrderChange(e.target.value as 'asc' | 'desc')}
+          className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="asc">A to Z</option>
+          <option value="desc">Z to A</option>
+        </select>
+      </div>
       <h2 className="text-lg font-semibold mb-4">Filter by Breed</h2>
       <div className="space-y-2 max-h-[calc(100vh-8rem)] overflow-y-auto">
         {breeds.map((breed) => (
