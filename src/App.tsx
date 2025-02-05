@@ -8,6 +8,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [selectedBreeds, setSelectedBreeds] = useState<string[]>([]);
 
   const handleLogin = async (name: string, email: string) => {
     setIsLoading(true);
@@ -36,6 +37,10 @@ function App() {
     }
   };
 
+  const handleBreedsChange = (breeds: string[]) => {
+    setSelectedBreeds(breeds);
+  };
+
   return (
     <Router>
       <Routes>
@@ -53,7 +58,13 @@ function App() {
         />
         <Route
           path="/search"
-          element={isAuthenticated ? <Search /> : <Navigate to="/" replace />}
+          element={isAuthenticated ? 
+            <Search 
+              selectedBreeds={selectedBreeds} 
+              onBreedsChange={handleBreedsChange} 
+            /> : 
+            <Navigate to="/" replace />
+          }
         />
       </Routes>
     </Router>

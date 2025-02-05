@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 
 interface DogFiltersProps {
+  selectedBreeds: string[];
   onBreedsChange: (selectedBreeds: string[]) => void;
 }
 
-export function DogFilters({ onBreedsChange }: DogFiltersProps) {
+export function DogFilters({ selectedBreeds, onBreedsChange }: DogFiltersProps) {
   const [breeds, setBreeds] = useState<string[]>([]);
-  const [selectedBreeds, setSelectedBreeds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +36,6 @@ export function DogFilters({ onBreedsChange }: DogFiltersProps) {
       ? selectedBreeds.filter(b => b !== breed)
       : [...selectedBreeds, breed];
     
-    setSelectedBreeds(updatedBreeds);
     onBreedsChange(updatedBreeds);
   };
 
@@ -54,11 +53,11 @@ export function DogFilters({ onBreedsChange }: DogFiltersProps) {
               id={breed}
               checked={selectedBreeds.includes(breed)}
               onChange={() => handleBreedChange(breed)}
-              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
             />
             <label
               htmlFor={breed}
-              className="text-sm font-medium text-gray-700 cursor-pointer"
+              className="text-sm font-medium text-gray-700 cursor-pointer select-none"
             >
               {breed}
             </label>
